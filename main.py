@@ -38,6 +38,26 @@ class Grafo(ABC):
     def is_completo(self):
         pass
 
+    @abstractmethod
+    def get_vertices(self):
+        pass
+
+    @abstractmethod
+    def get_arestas(self):
+        pass
+
+    @abstractmethod
+    def is_subgrafo(self, outro_grafo):
+        pass
+
+    @abstractmethod
+    def is_subgrafo_gerador(self, outro_grafo):
+        pass
+
+    @abstractmethod
+    def is_subgrafo_induzido(self, outro_grafo):
+        pass
+
 
 class GrafoDenso(Grafo):
     # Definição do grafo
@@ -152,6 +172,30 @@ class GrafoDenso(Grafo):
                     if i != j and self.matriz[i][j] == 0:
                         return False
             return True
+        
+
+        def get_vertices(self):
+            return self.vertices
+        
+
+        def get_arestas(self):
+            arestas = []
+            for i in self.lista_adj:
+                for j in self.lista_adj[i]:
+                    arestas.append((i,j))
+            return arestas
+        
+
+        def is_subgrafo(self, outro_grafo):
+            return(set(outro_grafo.get_vertices()).issubset(set(self.get_vertices())) and set(outro_grafo.get_arestas()).issubset(set(self.get_arestas())))
+        
+
+        def is_subgrafo_gerador(self, outro_grafo):
+            return (self.is_subgrafo(outro_grafo) and set(outro_grafo.get_vertices() == set(self.get_vertices())))
+        
+
+        def is_subgrafo_induzido(self, outro_grafo):
+            pass
 
 
 class GrafoEsparso(Grafo):
@@ -256,7 +300,12 @@ class GrafoEsparso(Grafo):
 
         
         def is_simples(self):
-            pass
+            for vertice, vizinhos in self.lista_adj.items():
+                if vertice in vizinhos:
+                    return False
+                if len(vizinhos) != len(set(vizinhos)):
+                    return False
+            return True
 
 
         def is_nulo(self):
@@ -264,8 +313,35 @@ class GrafoEsparso(Grafo):
         
         
         def is_completo(self):
-            pass
+            n = len(self.vertices)
+            for vertice, vizinhos in self.lista_adj.items():
+                if len(set(vizinhos)) != n - 1:
+                    return False
+            return True
+        
 
+        def get_vertices(self):
+            return self.vertices
+        
+
+        def get_arestas(self):
+            arestas = []
+            for i in self.lista_adj:
+                for j in self.lista_adj[i]:
+                    arestas.append((i, j))
+            return arestas
+        
+
+        def is_subgrafo(self, outro_grafo):
+            return(set(outro_grafo.get_vertices()).issubset(set(self.get_vertices())) and set(outro_grafo.get_arestas()).issubset(set(self.get_arestas())))
+        
+
+        def is_subgrafo_gerador(self, outro_grafo):
+            return(self.is_subgrafo(outro_grafo) and set(outro_grafo.get_vertices()) == set(self.get_vertices()))
+        
+
+        def is_subgrafo_induzido(self, outro_grafo):
+            pass
 
 
 if __name__ == "__main__":
