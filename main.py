@@ -1,4 +1,5 @@
 import sys
+import itertools
 from abc import ABC, abstractmethod
 
 class Grafo(ABC):
@@ -196,6 +197,34 @@ class GrafoDenso(Grafo):
 
         def is_subgrafo_induzido(self, outro_grafo):
             pass
+
+        def _checa_mapeamento_preserva_adjacencia(self, grafo1, grafo2, mapping):
+            arestas_1 = grafo1.get_arestas()
+            arestas_2 = grafo2.get_arestas()
+
+            for aresta in arestas_1:
+                u1, v1 = aresta
+                u2 = mapping[u1]
+                v2 = mapping[v1]
+                if ((u2, v2) not in arestas_2) and ((v2, u2) not in arestas_2):
+                    return False
+            
+            return True
+        
+
+        def is_isomorfo(self, grafo):
+            if(self.numero_de_vertices() == grafo.numero_de_vertices() and
+               self.numero_de_arestas() == grafo.numero_de_arestas() and
+               self.sequencia_de_graus() == grafo.sequencia_de_graus()):
+                vertices1 = list(self.get_vertices())
+                vertices2 = list(grafo.get_vertices())
+
+                for p in itertools.permutations(vertices2):
+                    mapping = dict(zip(vertices1, p))
+                    if self._checa_mapeamento_preserva_adjacencia(self, grafo, mapping):
+                        return True
+            
+            return False
 
 
 class GrafoEsparso(Grafo):
